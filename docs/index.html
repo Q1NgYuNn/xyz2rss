@@ -96,7 +96,11 @@ let lastUrl = '';
 
 // 支持用 ?url= 直接预填（快捷方式会这样调用）
 const preset = new URLSearchParams(location.search).get('url');
-if (preset) { $('url').value = preset; }
+if (preset) {
+  $('url').value = preset;
+  // 快捷方式带着链接打开时，自动开始转换
+  window.addEventListener('load', () => $('go').click());
+}
 
 $('go').onclick = async () => {
   const link = $('url').value.trim();
