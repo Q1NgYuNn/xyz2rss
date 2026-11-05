@@ -1,0 +1,8 @@
+{
+  "name": "小宇宙 → RSS",
+  "version": "1.0.0",
+  "description": "把小宇宙播客链接转换成可订阅的 RSS",
+  "build": {
+    "appUrl": "https://www.icloud.com/shortcuts/"
+  }
+}

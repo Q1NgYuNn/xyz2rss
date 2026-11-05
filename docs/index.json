@@ -1,0 +1,20 @@
+{
+  "feeds": {
+    "68c4f6d6a5335c4565c0c526": {
+      "pid": "68c4f6d6a5335c4565c0c526",
+      "title": "得体广播站",
+      "source": "official",
+      "episodes": 57,
+      "updated": "2026-11-05T06:35:50Z",
+      "file": "68c4f6d6a5335c4565c0c526.xml"
+    },
+    "66e2a2dc91e4685189e136f9": {
+      "pid": "66e2a2dc91e4685189e136f9",
+      "title": "重重电波",
+      "source": "web",
+      "episodes": 15,
+      "updated": "2026-11-05T06:35:52Z",
+      "file": "66e2a2dc91e4685189e136f9.xml"
+    }
+  }
+}
