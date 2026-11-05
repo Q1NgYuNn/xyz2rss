@@ -140,17 +140,26 @@ def load_podcast(pid):
 
 
 def find_official_feed(pod, timeout=15):
-    """用播客名 / 主播名到 Apple Podcasts 反查 feedUrl（只认完全同名或用 pid 佐证）。"""
-    titles = []
-    if pod.get("title"):
-        titles.append(pod["title"])
-    for p in (pod.get("podcasters") or [])[:3]:
-        n = (p.get("nickname") or "").strip()
-        if n and n not in titles:
-            titles.append(n)
+    """反查播客的官方 feed。
 
+    只接受能确认属于小宇宙的 feed：
+      1) feed.xyzfm.space 域名（小宇宙官方托管），优先；
+      2) 其他域名时，必须能在 feed 内容里找到该播客的 pid 或完全同名标题。
+    避免同名播客（如喜马拉雅上的同名节目）串台。
+    """
     want = (pod.get("title") or "").strip()
-    for term in titles[:2]:
+    pid = pod.get("pid") or ""
+    if not want:
+        return None
+
+    terms = [want]
+    for p in (pod.get("podcasters") or [])[:2]:
+        n = (p.get("nickname") or "").strip()
+        if n and n not in terms:
+            terms.append(n)
+
+    candidates = []
+    for term in terms[:2]:
         url = ("https://itunes.apple.com/search?term=%s&entity=podcast&country=cn&limit=15"
                % urllib.parse.quote(term))
         try:
@@ -158,15 +167,32 @@ def find_official_feed(pod, timeout=15):
             results = json.loads(body).get("results", [])
         except Exception:  # noqa
             continue
-        exact = [r for r in results
-                 if (r.get("collectionName") or "").strip() == want and r.get("feedUrl")]
-        if len(exact) == 1:
-            return exact[0]["feedUrl"]
-        for r in exact:
-            if "feed.xyzfm.space" in r["feedUrl"]:
-                return r["feedUrl"]
-        if exact:
-            return exact[0]["feedUrl"]
+        for r in results:
+            name = (r.get("collectionName") or "").strip()
+            feed = r.get("feedUrl") or ""
+            if name != want or not feed:
+                continue
+            candidates.append(feed)
+
+        if candidates:
+            break
+
+    # 1) 小宇宙官方域名优先，直接可信
+    for f in candidates:
+        if "feed.xyzfm.space" in f:
+            return f
+
+    # 2) 其他域名：必须能在 feed 里找到该播客的 pid 才认
+    for f in candidates:
+        if not pid:
+            continue
+        try:
+            body, _u, _h = http_get(f, timeout=timeout, retries=1)
+        except Exception:  # noqa
+            continue
+        if pid in body:
+            return f
+
     return None
 
 
