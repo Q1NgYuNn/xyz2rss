@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小宇宙 → RSS</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px 18px 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    background: #f7f7f8; color: #111;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #000; color: #f2f2f7; }
+    .card { background: #1c1c1e !important; }
+    input { background: #2c2c2e !important; color: #fff !important; border-color: #3a3a3c !important; }
+    .out { background: #2c2c2e !important; color: #fff !important; }
+  }
+  h1 { font-size: 22px; margin: 8px 0 4px; letter-spacing: -0.3px; }
+  .sub { color: #8e8e93; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+  .card {
+    background: #fff; border-radius: 14px; padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06); margin-bottom: 14px;
+  }
+  label { display: block; font-size: 13px; color: #8e8e93; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 12px; font-size: 15px; border-radius: 10px;
+    border: 1px solid #e5e5ea; outline: none; -webkit-appearance: none;
+  }
+  button {
+    width: 100%; padding: 14px; font-size: 16px; font-weight: 600;
+    border: none; border-radius: 12px; background: #007aff; color: #fff;
+    margin-top: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  button:disabled { opacity: .5; }
+  button.ghost { background: #e5e5ea; color: #007aff; }
+  @media (prefers-color-scheme: dark) { button.ghost { background: #2c2c2e; } }
+  .hidden { display: none; }
+  .meta { font-size: 14px; margin-bottom: 10px; line-height: 1.6; }
+  .tag {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    background: #e8f5e9; color: #2e7d32; margin-left: 6px; vertical-align: middle;
+  }
+  .tag.web { background: #fff3e0; color: #e65100; }
+  .out {
+    width: 100%; padding: 12px; font-size: 13px; border-radius: 10px;
+    background: #f2f2f7; border: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    resize: vertical; min-height: 68px; word-break: break-all; -webkit-user-select: all;
+    user-select: all;
+  }
+  .err { color: #ff3b30; font-size: 14px; line-height: 1.5; }
+  .hint { font-size: 12px; color: #8e8e93; margin-top: 10px; line-height: 1.6; }
+  .steps { font-size: 13px; color: #8e8e93; line-height: 1.9; margin: 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+
+<h1>小宇宙 → RSS</h1>
+<div class="sub">粘贴小宇宙播客链接，生成可订阅的播客 RSS</div>
+
+<div class="card">
+  <label for="url">小宇宙链接</label>
+  <input id="url" type="text" inputmode="url" autocomplete="off"
+         placeholder="https://www.xiaoyuzhoufm.com/podcast/...">
+  <button id="go">开始转换</button>
+</div>
+
+<div class="card hidden" id="result">
+  <div class="meta" id="meta"></div>
+  <label>RSS 地址（点一下全选复制）</label>
+  <textarea class="out" id="out" readonly rows="3"></textarea>
+  <button class="ghost" id="copy">复制 RSS 地址</button>
+  <div class="hint" id="hint"></div>
+</div>
+
+<div class="card hidden" id="errorCard">
+  <div class="err" id="error"></div>
+</div>
+
+<div class="card">
+  <label>怎么订阅</label>
+  <ol class="steps">
+    <li>复制上面的 RSS 地址</li>
+    <li>打开播客客户端（Apple 播客 / Overcast / Pocket Casts）</li>
+    <li>选择「通过 URL 添加节目」，粘贴地址即可</li>
+  </ol>
+</div>
+
+<script src="xyz.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let lastUrl = '';
+
+// 支持用 ?url= 直接预填（快捷方式会这样调用）
+const preset = new URLSearchParams(location.search).get('url');
+if (preset) { $('url').value = preset; }
+
+$('go').onclick = async () => {
+  const link = $('url').value.trim();
+  if (!link) { showErr('请先粘贴小宇宙链接'); return; }
+
+  $('go').disabled = true;
+  $('go').textContent = '转换中…';
+  $('result').classList.add('hidden');
+  $('errorCard').classList.add('hidden');
+
+  try {
+    const r = await XYZ.convert(link);
+    const pid = r.pod.pid;
+
+    // RSS 由本页生成。为了让播客客户端能订阅，
+    // 把内容存成本地 Blob 地址（同一次会话内可用）。
+    const xml = r.xml;
+    const blob = new Blob([xml], { type: 'application/rss+xml;charset=utf-8' });
+    const objUrl = URL.createObjectURL(blob);
+    lastUrl = objUrl;
+
+    const n = r.episodes.length;
+    const declared = r.pod.episodeCount || n;
+    const tag = r.source === 'official'
+      ? '<span class="tag">完整 ' + n + ' 集</span>'
+      : '<span class="tag web">最新 ' + n + ' 集</span>';
+
+    $('meta').innerHTML =
+      '《' + esc(r.pod.title || '未命名') + '》' + tag +
+      '<br><span style="color:#8e8e93;font-size:13px">共 ' + declared + ' 集 · ' +
+      (r.pod.author || '未知主播') + '</span>';
+
+    $('out').value = objUrl;
+    $('hint').innerHTML = r.source === 'official'
+      ? '已从小宇宙官方完整 feed 获取全部单集。'
+      : '该播客未上架 Apple Podcasts，只能获取最新 ' + n + ' 集（小宇宙网页仅公开这么多）。';
+
+    $('result').classList.remove('hidden');
+  } catch (e) {
+    showErr(e.message || String(e));
+  } finally {
+    $('go').disabled = false;
+    $('go').textContent = '开始转换';
+  }
+};
+
+$('copy').onclick = async () => {
+  try {
+    await navigator.clipboard.writeText($('out').value);
+    $('copy').textContent = '已复制 ✓';
+    setTimeout(() => { $('copy').textContent = '复制 RSS 地址'; }, 1600);
+  } catch (e) {
+    $('out').select();
+  }
+};
+
+function esc(s) {
+  return String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+}
+function showErr(msg) {
+  $('error').textContent = '出错了：' + msg;
+  $('errorCard').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
