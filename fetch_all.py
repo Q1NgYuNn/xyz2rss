@@ -82,6 +82,12 @@ def main(argv):
     with open(path, "w", encoding="utf-8") as f:
         f.write(xml)
 
+    # 同步写入 build 缓存，之后 refresh.py 走网页源也不会退回 15 集
+    import build as B
+    B.save_cache(pid, {"pid": pid, "title": pod.get("title"),
+                       "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                       "episodes": eps})
+
     idx = publish.load_index()
     idx["feeds"][pid] = {
         "pid": pid,
