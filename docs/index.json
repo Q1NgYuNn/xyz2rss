@@ -47,6 +47,14 @@
       "episodes": 75,
       "updated": "2026-11-19T14:56:50Z",
       "file": "66882adc356b8b5cdaf5c9e7.xml"
+    },
+    "650589de7ee20b8016e1fca3": {
+      "pid": "650589de7ee20b8016e1fca3",
+      "title": "开涮调频",
+      "source": "token",
+      "episodes": 175,
+      "updated": "2026-11-19T15:05:19Z",
+      "file": "650589de7ee20b8016e1fca3.xml"
     }
   }
 }
