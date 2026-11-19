@@ -39,6 +39,14 @@
       "episodes": 127,
       "updated": "2026-11-19T08:21:19Z",
       "file": "63e8bc390d7e8eaa7271eb94.xml"
+    },
+    "66882adc356b8b5cdaf5c9e7": {
+      "pid": "66882adc356b8b5cdaf5c9e7",
+      "title": "怪奇物语：灵异与案件",
+      "source": "token",
+      "episodes": 75,
+      "updated": "2026-11-19T14:56:50Z",
+      "file": "66882adc356b8b5cdaf5c9e7.xml"
     }
   }
 }
