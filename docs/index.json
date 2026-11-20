@@ -3,9 +3,9 @@
     "68c4f6d6a5335c4565c0c526": {
       "pid": "68c4f6d6a5335c4565c0c526",
       "title": "得体广播站",
-      "source": "official",
-      "episodes": 59,
-      "updated": "2026-11-19T08:21:09Z",
+      "source": "web",
+      "episodes": 15,
+      "updated": "2026-11-20T08:00:07Z",
       "file": "68c4f6d6a5335c4565c0c526.xml"
     },
     "66e2a2dc91e4685189e136f9": {
@@ -13,7 +13,7 @@
       "title": "重重电波",
       "source": "web",
       "episodes": 15,
-      "updated": "2026-11-19T08:21:12Z",
+      "updated": "2026-11-20T08:00:10Z",
       "file": "66e2a2dc91e4685189e136f9.xml"
     },
     "64a253b063a61044f4183999": {
@@ -21,7 +21,7 @@
       "title": "福说聊天会",
       "source": "web",
       "episodes": 15,
-      "updated": "2026-11-19T08:21:15Z",
+      "updated": "2026-11-20T08:00:13Z",
       "file": "64a253b063a61044f4183999.xml"
     },
     "6561f4b5737f33c0cdacbf98": {
@@ -29,7 +29,7 @@
       "title": "风声播客",
       "source": "web",
       "episodes": 15,
-      "updated": "2026-11-19T08:21:17Z",
+      "updated": "2026-11-20T08:00:15Z",
       "file": "6561f4b5737f33c0cdacbf98.xml"
     },
     "63e8bc390d7e8eaa7271eb94": {
@@ -37,23 +37,23 @@
       "title": "豌豆BOSS",
       "source": "web",
       "episodes": 127,
-      "updated": "2026-11-19T08:21:19Z",
+      "updated": "2026-11-20T08:00:18Z",
       "file": "63e8bc390d7e8eaa7271eb94.xml"
     },
     "66882adc356b8b5cdaf5c9e7": {
       "pid": "66882adc356b8b5cdaf5c9e7",
       "title": "怪奇物语：灵异与案件",
-      "source": "token",
+      "source": "web",
       "episodes": 75,
-      "updated": "2026-11-19T14:56:50Z",
+      "updated": "2026-11-20T08:00:20Z",
       "file": "66882adc356b8b5cdaf5c9e7.xml"
     },
     "650589de7ee20b8016e1fca3": {
       "pid": "650589de7ee20b8016e1fca3",
       "title": "开涮调频",
-      "source": "token",
+      "source": "web",
       "episodes": 175,
-      "updated": "2026-11-19T15:05:19Z",
+      "updated": "2026-11-20T08:00:22Z",
       "file": "650589de7ee20b8016e1fca3.xml"
     }
   }
